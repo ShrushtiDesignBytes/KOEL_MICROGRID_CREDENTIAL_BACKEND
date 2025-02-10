@@ -16,8 +16,27 @@ const PORT = 5002 || process.env.PORT;
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const allowedOrigins = [
+    'https://koelsmartenergy.com/', // Production frontend
+    'https://www.koelsmartenergy.com'
+  ];
+  
+  const corsOptions = {
+    origin: (origin, callback) => {
+      //console.log('Request Origin:', origin); // Debugging
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true, // Allow cookies/auth headers if needed
+  };
+  
 
-app.use(cors())
+app.use(cors(corsOptions))
 
 app.use('/role', roleRoutes);
 app.use('/site', siteRoutes);
